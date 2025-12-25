@@ -1,0 +1,160 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{titlesec}
+
+% Section styling
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{1em}{}
+
+\title{Diabetes Risk Analysis: A Comparative Study on Clinical Markers using Statistical Inference}
+\author{Amr Yasser, Omar Hazem, Youssef Mohamed, Mohamed Mourad, Hady Saeed}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This report presents a comprehensive analysis of the Pima Indians Diabetes dataset, utilizing clinical measurements from 768 female patients to identify key metabolic and physiological markers of diabetes onset. Through rigorous Exploratory Data Analysis (EDA), hypothesis testing (t-tests), and confidence interval simulations, we demonstrate that glucose concentration, Body Mass Index (BMI), and age are primary predictors of clinical risk. Our findings confirm that diabetic patients exhibit statistically significantly higher insulin resistance and glucose levels ($p < 0.05$). Furthermore, simulation results illustrate that increasing sample size from $n=10$ to $n=100$ significantly narrows confidence intervals while maintaining expected coverage, reinforcing the reliability of larger-scale health surveys.
+\end{abstract}
+
+\section{Introduction}
+Diabetes mellitus is a chronic metabolic disorder characterized by elevated levels of blood glucose, which leads over time to serious damage to the heart, blood vessels, eyes, kidneys, and nerves. The Pima Indians Diabetes dataset, sourced from Kaggle, provides a unique opportunity to study health trends within a specific demographic (females of Pima Indian heritage). 
+
+The primary objectives of this study are:
+\begin{enumerate}
+    \item To investigate physiological differences between diabetic and non-diabetic cohorts.
+    \item To identify correlations between key health metrics such as Glucose, BMI, and Age.
+    \item To statistically validate claims regarding metabolic gaps through formal hypothesis testing.
+    \item To analyze the behavior of confidence intervals in small versus large sample regimes.
+\end{enumerate}
+
+\section{Data Processing and Analysis}
+\subsection{Statistical Methodology}
+The analytical workflow prioritized clinical relevance and statistical rigor. We utilized the Welch Two Sample t-test for hypothesis testing, which is robust to unequal variances between cohorts. All statistical computations were performed in R, leveraging the \texttt{tidyverse} for data manipulation and \texttt{infer} for simulation-based inference.
+
+\subsection{Data Cleaning}
+Preliminary inspection revealed anomalous zero values in columns where a zero is physiologically impossible (Glucose, Blood Pressure, Skin Thickness, Insulin, and BMI). These were treated as missing data (converted to \texttt{NA}) to prevent mean-skewing.
+\begin{table}[H]
+    \centering
+    \caption{Missing Value Detection (Zeros handled as NA)}
+    \label{tab:missing_data}
+    \begin{tabular}{@{}lccccc@{}}
+        \toprule
+        Variable & Glucose & Blood Pressure & Skin Thickness & Insulin & BMI \\
+        \midrule
+        Missing Count & 5 & 35 & 227 & 374 & 11 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\section{Results and Observations}
+
+\subsection{Exploratory Analysis: The Metabolic Gap}
+Part 1 of our analysis focused on the absolute differences between the two outcome groups. As illustrated in Figure \ref{fig:metabolic_gap}, there is a prominent "Glucose Gap," where the average glucose level for diabetic patients ($\sim$142 mg/dL) is significantly higher than the control group ($\sim$111 mg/dL).
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\textwidth]{../figures/glucose_concentration_by_outcome.png}
+        \caption{Average Glucose Concentration}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\textwidth]{../figures/diabetes_prevalence_pie_chart.png}
+        \caption{Diabetes Prevalence Rate}
+    \end{subfigure}
+    \caption{Cohort comparison vs overall population prevalence. The sample shows a high global prevalence of approximately 34.9\%.}
+    \label{fig:metabolic_gap}
+\end{figure}
+
+\subsection{Risk Markers: Pregnancies and Genetics}
+Our extended analysis in Part 2 investigated physiological and genetic risk factors. As shown in Figure \ref{fig:risk_markers}, diabetic patients tend to have a higher median number of pregnancies and a slightly higher Diabetes Pedigree Function (DPF), indicating a stronger genetic predisposition.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\textwidth]{../figures/boxplot_pregnancies_by_outcome.png}
+        \caption{Pregnancies by Outcome}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\textwidth]{../figures/boxplot_dpf_by_outcome.png}
+        \caption{DPF by Outcome}
+    \end{subfigure}
+    \caption{Distribution of pregnancies and pedigree function.}
+    \label{fig:risk_markers}
+\end{figure}
+
+\subsection{Multivariate Risk Profiles}
+In Part 2, we investigated how variables interact. Age progression shows that risk increases as patients get older, but this is often compounded by BMI. Higher BMI values, specifically above 30 (Obese category), showed a higher density of diabetic instances, as seen in Figure \ref{fig:multivariate}.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{../figures/multivariate_age_glucose_bmi.png}
+        \caption{Glucose trends over Age}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{../figures/scatter_bmi_vs_bloodpressure.png}
+        \caption{BMI vs Blood Pressure Distribution}
+    \end{subfigure}
+    \caption{Multivariate overlaps and correlations. There is a visible positive correlation between BMI and clinical risk.}
+    \label{fig:multivariate}
+\end{figure}
+
+\section{Inferential Statistics}
+
+\subsection{Hypothesis Testing}
+We conducted two-sample t-tests to evaluate the significance of the difference in means between diabetic (Group 1) and non-diabetic (Group 0) patients.
+
+\begin{table}[H]
+    \centering
+    \caption{Hypothesis Test Summaries (Significance Level $\alpha = 0.05$)}
+    \begin{tabular}{@{}lcccc@{}}
+        \toprule
+        Test Variable & Null Hypothesis ($H_0$) & Alt Hypothesis ($H_1$) & P-Value & Conclusion \\
+        \midrule
+        Glucose & $\mu_0 = \mu_1$ & $\mu_0 \neq \mu_1$ & $< 2.2 \times 10^{-16}$ & Reject $H_0$ \\
+        BMI & $\mu_0 = \mu_1$ & $\mu_0 < \mu_1$ & $< 2.2 \times 10^{-16}$ & Reject $H_0$ \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+The p-values for both tests are effectively zero, providing overwhelming evidence that diabetic patients have significantly higher glucose concentrations and BMI than non-diabetic patients. 
+
+\subsection{Simulation Task: Confidence Interval Coverage}
+Part 4 of the study simulated 25 random samples for various sizes ($n=10, 15, 100$). The results show that for smaller sample sizes ($n=10$), the intervals are wider and more susceptible to sampling error. As $n$ increases to 100, the intervals shrink (becoming more precise), and the proportion of intervals containing the true population mean aligns perfectly with the 95\% theoretical expectation.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../figures/confidence_interval_simulations.png}
+    \caption{Confidence Interval Simulations: Comparison of $n=10, 15, 100$. Note the precision increase with sample size.}
+    \label{fig:simulations}
+\end{figure}
+
+\section{Challenges and Limitations}
+\begin{itemize}
+    \item \textbf{Missing Data}: A large portion of the `Insulin` and `SkinThickness` data was missing (zeros), which limits the predictive reliability of those specific features without imputation.
+    \item \textbf{Demographic Bias}: The data pertains specifically to Pima Indian females. Results may not generalized to other ethnic groups or males without further study.
+    \item \textbf{Temporal Aspect}: The dataset is a snapshot; longitudinal data would provide better insights into the \textit{rate} of diabetes progression.
+\end{itemize}
+
+\section{Conclusion}
+This statistical analysis concludes that Glucose and BMI are established as the strongest clinical indicators of diabetes risk in this population. The "Glucose Gap" provides a clear diagnostic threshold, while the hypothesis tests confirm these gaps are statistically rigorous and not due to random chance. Furthermore, our simulations demonstrate the criticality of sample size in diagnostic reliability. Future work should explore predictive modelling (Logistic Regression) or imputation techniques to recapture the value of the missing insulin data.
+
+\end{document}
